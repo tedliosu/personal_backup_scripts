@@ -55,10 +55,11 @@ curr_bkup_dir_url="file://$curr_bkup_dir"
 set -x
 # Now do actual backup
 duplicity --volsize "$volume_size" --exclude /dev --exclude /proc --exclude /tmp --exclude /sys --exclude /media --exclude /mnt --exclude /run / "$curr_bkup_dir_url"
+duplicity_exit_code="$?"
 set +x
 
 # Now proceed ONLY IF backup was successful
-if [ "$?" -eq "0" ]; then
+if [ "$duplicity_exit_code" -eq "0" ]; then
      printf "Setting immutability attribute on new backup\n"
      chattr -R +i "${curr_bkup_dir}"
      printf "Remove immutability attribute on old backup and delete old backup\n"

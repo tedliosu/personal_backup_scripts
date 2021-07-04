@@ -27,12 +27,12 @@ readonly bkup_mount_dir2="$(lsblk --output UUID,mountpoint | \
 				    cut -d " " -f$disk_label_pos)"
 
 if [ "$bkup_mount_dir1" = "" ]; then
-       printf "Error - partition with UUID $uuid_bkup_1 not found\n"
-       exit "$(false || echo "$?")"
+      printf "Error - partition with UUID $uuid_bkup_1 not found\n"
+      exit "$(false || echo "$?")"
 fi
 if [ "$bkup_mount_dir2" = "" ]; then
-       printf "Error - partition with UUID $uuid_bkup_2 not found\n"
-       exit "$(false || echo "$?")"
+      printf "Error - partition with UUID $uuid_bkup_2 not found\n"
+      exit "$(false || echo "$?")"
 fi
 
 # Determine which directories to backup to and which to clear via file count
@@ -41,7 +41,7 @@ curr_bkup_dir=""
 old_bkup_dir=""
 secondary_os_bkup_dir=""
 readonly bkup_mount_dir1_count="$(ls -1 --almost-all "$bkup_mount_dir1" | wc --lines)"
-readonly bkup_mount_dir2_count="$(ls -1 --almost-all "$bkup_mount_dir2" | wc --lines)" 
+readonly bkup_mount_dir2_count="$(ls -1 --almost-all "$bkup_mount_dir2" | wc --lines)"
 if [ "$bkup_mount_dir1_count" -le "$min_file_count" ]; then
 	curr_bkup_dir="$bkup_mount_dir1"
 	old_bkup_dir="$bkup_mount_dir2"
@@ -61,10 +61,11 @@ curr_bkup_dir_url="file://$curr_bkup_dir/"
 set -x
 # Now do actual backup
 duplicity --volsize "$volume_size" --exclude /dev --exclude /proc --exclude /tmp --exclude /sys --exclude /media --exclude /mnt --exclude /run / "$curr_bkup_dir_url"
+duplicity_exit_code="$?"
 set +x
 
 # Now proceed ONLY IF backup was successful
-if [ "$?" -eq "0" ]; then
+if [ "$duplicity_exit_code" -eq "0" ]; then
      printf "Setting immutability attribute on new backup\n"
      chattr -R +i "${curr_bkup_dir}/dup"*
      printf "Remove immutability attribute on old backup and delete old backup\n"
