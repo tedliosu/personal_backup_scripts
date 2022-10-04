@@ -17,6 +17,8 @@ readonly uuid_bkup_1="19d16fda-68c5-4e1d-b644-4a7dd064de31"
 readonly uuid_bkup_2="f01df727-6d52-41fb-a946-c32a2455f41b"
 # column number of disk label as output by lsblk
 readonly disk_label_pos="2"
+# find command min search depth
+readonly find_min_search_depth=1
 
 # Get mounts of current disks
 readonly bkup_mount_dir1="$(lsblk --output UUID,mountpoint | \
@@ -27,11 +29,11 @@ readonly bkup_mount_dir2="$(lsblk --output UUID,mountpoint | \
 				    cut -d " " -f$disk_label_pos)"
 
 if [ "$bkup_mount_dir1" = "" ]; then
-      printf "Error - partition with UUID $uuid_bkup_1 not found\n"
+      printf "Error - partition with UUID %s not found\n" "$uuid_bkup_1"
       exit "$(false || echo "$?")"
 fi
 if [ "$bkup_mount_dir2" = "" ]; then
-      printf "Error - partition with UUID $uuid_bkup_2 not found\n"
+      printf "Error - partition with UUID %s not found\n" "$uuid_bkup_2"
       exit "$(false || echo "$?")"
 fi
 
@@ -40,17 +42,17 @@ fi
 curr_bkup_dir=""
 old_bkup_dir=""
 secondary_os_bkup_dir=""
-readonly bkup_mount_dir1_count="$(ls -1 --almost-all "$bkup_mount_dir1" | wc --lines)"
-readonly bkup_mount_dir2_count="$(ls -1 --almost-all "$bkup_mount_dir2" | wc --lines)"
+readonly bkup_mount_dir1_count="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | wc --lines)"
+readonly bkup_mount_dir2_count="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | wc --lines)"
 if [ "$bkup_mount_dir1_count" -le "$min_file_count" ]; then
 	curr_bkup_dir="$bkup_mount_dir1"
 	old_bkup_dir="$bkup_mount_dir2"
-	secondary_os_bkup_dir="$(ls -1 --almost-all "$bkup_mount_dir2" | grep "^\." )"
+	secondary_os_bkup_dir="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | grep "^\." )"
         mkdir "$bkup_mount_dir1/$secondary_os_bkup_dir"
 elif [ "$bkup_mount_dir2_count" -le "$min_file_count" ]; then
 	curr_bkup_dir="$bkup_mount_dir2"
 	old_bkup_dir="$bkup_mount_dir1"
-	secondary_os_bkup_dir="$(ls -1 --almost-all "$bkup_mount_dir1" | grep "^\." )"
+	secondary_os_bkup_dir="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | grep "^\." )"
         mkdir "$bkup_mount_dir2/$secondary_os_bkup_dir"
 else
 	printf "ERROR - cannot determine which directory to backup to based on file counts.\n"
