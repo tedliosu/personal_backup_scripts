@@ -40,14 +40,14 @@ fi
 # Determine which directory to backup to and which to clear via file count
 curr_bkup_dir=""
 old_bkup_dir=""
-readonly bkup_mount_dir1_count="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth | wc --lines)"
-readonly bkup_mount_dir2_count="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth | wc --lines)"
+readonly bkup_mount_dir1_count="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | wc --lines)"
+readonly bkup_mount_dir2_count="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | wc --lines)"
 if [ "$bkup_mount_dir1_count" -le "$min_file_count" ]; then
-	curr_bkup_dir="$bkup_mount_dir2/$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth | grep "^\." )/"
-	old_bkup_dir="$bkup_mount_dir1/$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth | grep "^\." )/"
+	curr_bkup_dir="$bkup_mount_dir2/$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )/"
+	old_bkup_dir="$bkup_mount_dir1/$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )/"
 elif [ "$bkup_mount_dir2_count" -le "$min_file_count" ]; then
-	curr_bkup_dir="$bkup_mount_dir1/$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth | grep "^\." )/"
-	old_bkup_dir="$bkup_mount_dir2/$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth | grep "^\." )/"
+	curr_bkup_dir="$bkup_mount_dir1/$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )/"
+	old_bkup_dir="$bkup_mount_dir2/$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )/"
 else
 	printf "ERROR - cannot determine which directory to backup to based on file counts.\n"
 	exit "$(false || echo "$?")" 

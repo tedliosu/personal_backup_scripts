@@ -47,12 +47,12 @@ readonly bkup_mount_dir2_count="$(find "$bkup_mount_dir2" -mindepth "$find_min_s
 if [ "$bkup_mount_dir1_count" -le "$min_file_count" ]; then
 	curr_bkup_dir="$bkup_mount_dir1"
 	old_bkup_dir="$bkup_mount_dir2"
-	secondary_os_bkup_dir="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | grep "^\." )"
+	secondary_os_bkup_dir="$(find "$bkup_mount_dir2" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )"
         mkdir "$bkup_mount_dir1/$secondary_os_bkup_dir"
 elif [ "$bkup_mount_dir2_count" -le "$min_file_count" ]; then
 	curr_bkup_dir="$bkup_mount_dir2"
 	old_bkup_dir="$bkup_mount_dir1"
-	secondary_os_bkup_dir="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" | grep "^\." )"
+	secondary_os_bkup_dir="$(find "$bkup_mount_dir1" -mindepth "$find_min_search_depth" -maxdepth "$find_min_search_depth" -print0 | xargs --null --max-lines=1 basename | grep "^\." )"
         mkdir "$bkup_mount_dir2/$secondary_os_bkup_dir"
 else
 	printf "ERROR - cannot determine which directory to backup to based on file counts.\n"
