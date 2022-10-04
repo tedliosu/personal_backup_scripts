@@ -28,11 +28,11 @@ readonly bkup_mount_dir_name2="$(sudo -H lsblk --output UUID,label | \
                                                  cut -d" " -f$disk_label_pos)"
 
 if [ "$bkup_mount_dir_name1" = "" ]; then
-    printf "Error - partition with UUID $uuid_bkup_1 not found\n"
+    printf "Error - partition with UUID %s not found\n" "$uuid_bkup_1"
     exit "$(false || echo "$?")"
 fi
 if [ "$bkup_mount_dir_name2" = "" ]; then
-    printf "Error - partition with UUID $uuid_bkup_2 not found\n"
+    printf "Error - partition with UUID %s not found\n" "$uuid_bkup_2"
     exit "$(false || echo "$?")"
 fi
 
