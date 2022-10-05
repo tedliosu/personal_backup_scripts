@@ -36,16 +36,19 @@ if [ "$bkup_mount_dir_name2" = "" ]; then
     exit "$(false || echo "$?")"
 fi
 
-# mount all built-in physical disks
+# mount all built-in physical disks, and create new root dir to mount disks if needed
+if [ ! -d "$mount_dir" ]; then
+    sudo -H mkdir -p "$mount_dir"
+fi
 sudo -H mount --uuid "$root_disk_uuid" "$mount_dir"
 sudo -H mount --uuid "$efi_part_uuid" "$mount_dir/boot/efi"
 sudo -H mount --uuid "$home_disk_uuid" "$mount_dir/home"
 # create new mountpoints under directory to chroot to if necessary
 if [ ! -d "$mount_dir/media/root/$bkup_mount_dir_name1" ]; then
-   sudo -H mkdir "$mount_dir/media/root/$bkup_mount_dir_name1"
+   sudo -H mkdir -p "$mount_dir/media/root/$bkup_mount_dir_name1"
 fi
 if [ ! -d "$mount_dir/media/root/$bkup_mount_dir_name2" ]; then
-   sudo -H mkdir "$mount_dir/media/root/$bkup_mount_dir_name2"
+   sudo -H mkdir -p "$mount_dir/media/root/$bkup_mount_dir_name2"
 fi
 # mount rest of physical disks
 sudo -H mount --uuid "$uuid_bkup_1" "$mount_dir/media/root/$bkup_mount_dir_name1"
