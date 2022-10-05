@@ -53,12 +53,15 @@
   2.  If both of the external media's partitions' file systems each do not contain anything else other than
       the "lost+found" directory, simply pick one of the partitions, mount that partition, and create an empty
       hidden directory directly under the root folder of that partition, preferably naming that hidden directory
-      with a name which reflects its purpose like ".os_b_backups".  Unmount the partition after you're done
-      creating the hidden directory. 
+      with a name which reflects its purpose like ".os_b_backups". Also create an empty regular file named "duplicity_empty"
+      within that same directory that you have created the hidden directory. Unmount the partition after you're done
+      creating the hidden directory and "duplicity_empty". 
 
          - The name of the hidden directory can be changed later if desired without affecting how each script
            runs as long as each script isn't running while the directory name is being changed.
             
+         - The empty regular file will be deleted when the backup script under `/root/scripts` successfully finishes executing.
+
          - If the external media already contain backups for both OS's, then you may skip to the next step.
 
   3. Log into OS B and run "backup_os-a_mounts.sh" in order to chroot into OS A and mount all necessary devices
